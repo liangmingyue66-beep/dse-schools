@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DSE 内地高校筛选器（2026/27 指南）</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="head-row">
+    <h1>DSE 内地高校筛选器 <small>2026/27 · 全国 23 省</small></h1>
+    <button id="guideBtn" type="button" class="guide-btn">📖 使用指南</button>
+  </div>
+  <p class="rule">分数换算：<b>5**=7</b> · 5*=6 · 5=5 · 4=4 · 3=3 · 2=2 · 1=1</p>
+  <p class="note">
+    数据来源：《内地高校招收香港中學文憑考試學生計劃指南(2026/27)》；当前收录 <b>全国 23 省 165 校 3794 个专业</b>；
+    "去年成绩"为 2025/26 实录。分数筛选 = 只看"去年录取最低分 ≤ 我的总分"的专业。
+    工具只做筛选与陈列、不做"够不够"判断，最终以官方公布为准。
+  </p>
+</header>
+
+<main>
+  <!-- ============ 全局页 ============ -->
+  <div id="pg-schools">
+    <section class="filters">
+      <!-- 直达区 -->
+      <div class="fgroup" id="g-direct">
+        <label>院校名称
+          <input id="sn" type="text" list="schoolNames" placeholder="输入院校名称，回车直达…">
+        </label>
+        <datalist id="schoolNames"></datalist>
+      </div>
+
+      <!-- 地区区：省 → 市 联动 -->
+      <div class="fgroup">
+        <span class="fg-title">地区</span>
+        <label>省份
+          <select id="prov"><option value="">全部省份</option></select>
+        </label>
+        <label>城市
+          <select id="city2"><option value="">不限城市</option></select>
+        </label>
+      </div>
+
+      <!-- 属性区 -->
+      <div class="fgroup">
+        <span class="fg-title">属性</span>
+        <label>层次
+          <select id="tier">
+            <option value="">全部层次</option>
+            <option>985</option><option>211</option><option>双一流</option>
+            <option>普通公办</option><option>合作办学</option><option>民办</option>
+          </select>
+        </label>
+        <label>专业关键词
+          <input id="kw" type="text" placeholder="例：计算机 / 临床">
+        </label>
+      </div>
+
+      <!-- 分数区：高亮独立 -->
+      <div class="fscore">
+        <span class="fs-title">🎯 分数筛选</span>
+        <span class="fs-desc">只看「去年录取最低分 ≤ 我的总分」的专业</span>
+        <div class="fs-row">
+          <label>中文
+            <select id="g_zh"><option value="">不限</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>5*</option><option>5**</option></select>
+          </label>
+          <label>英文
+            <select id="g_en"><option value="">不限</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>5*</option><option>5**</option></select>
+          </label>
+          <label>数学
+            <select id="g_ma"><option value="">不限</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>5*</option><option>5**</option></select>
+          </label>
+          <span class="fs-total" id="totalHint"></span>
+          <button id="applyScore" class="ghost">✔ 应用分数筛选</button>
+          <button id="clearScore" class="ghost">清除分数</button>
+        </div>
+      </div>
+
+      <div class="row acts">
+        <button id="go">筛选</button>
+        <button id="reset" class="ghost">重置全部</button>
+      </div>
+    </section>
+
+    <div id="chips" class="chips"></div>
+    <p class="stat" id="stat"></p>
+    <ul class="schools" id="schools"></ul>
+  </div>
+
+  <!-- ============ 院校页（独立路由） ============ -->
+  <div id="pg-school" hidden>
+    <button id="back" class="ghost">← 返回院校列表</button>
+    <h2 id="detailTitle"></h2>
+    <section class="filters inner">
+      <div class="fgroup">
+        <label>在本校搜索专业
+          <input id="d_kw" type="text" placeholder="在本校找专业…">
+        </label>
+      </div>
+      <div class="fscore">
+        <span class="fs-title">🎯 本校分数筛选</span>
+        <span class="fs-desc">只看本校「去年录取最低分 ≤ 我的总分」的专业</span>
+        <div class="fs-row">
+          <label>中文
+            <select id="d_zh"><option value="">不限</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>5*</option><option>5**</option></select>
+          </label>
+          <label>英文
+            <select id="d_en"><option value="">不限</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>5*</option><option>5**</option></select>
+          </label>
+          <label>数学
+            <select id="d_ma"><option value="">不限</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>5*</option><option>5**</option></select>
+          </label>
+          <span class="fs-total" id="d_total"></span>
+          <button id="d_apply" class="ghost">✔ 应用本校分数筛选</button>
+          <button id="d_clear" class="ghost">清除分数</button>
+        </div>
+      </div>
+    </section>
+    <p class="stat" id="detailStat"></p>
+    <ul class="results" id="progs"></ul>
+  </div>
+</main>
+
+<footer><p>数据来源：官方《内地高校招收香港中学文凭考试学生计划指南（2026/27学年）》，仅供学习交流；录取分数为 2025/26 学年度实录，可能含校长推荐/体艺类等特殊计划口径，请以原书及院校官方简章为准。版权归原出版机构所有。</p></footer>
+
+<!-- ============ 使用指南弹窗 ============ -->
+<div id="guideModal" class="modal-mask" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-label="使用指南">
+    <div class="modal-head">
+      <span class="modal-title">📖 如何使用</span>
+      <button id="guideClose" type="button" class="modal-x" aria-label="关闭">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="method"><b>方法一 · 院校查询</b><br>顶部输入院校名称，回车直达该校详情。</p>
+      <p class="method"><b>方法二 · 分数查询</b><br>选好中／英／数等级，点"应用分数筛选"，只看去年最低分 ≤ 你总分的专业。</p>
+      <p class="method"><b>方法三 · 地区查询</b><br>先选省份、再选城市；可按 985/211/双一流 等层次、专业关键词组合筛选。</p>
+      <p class="modal-tip">录取分数为去年实录，以《指南》原书及院校官方简章为准。</p>
+    </div>
+    <div class="modal-foot">
+      <button id="guideOk" type="button" class="modal-ok">知道了，开始使用</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js?v=20260601"></script>
+<script src="app.js"></script>
+</body>
+</html>

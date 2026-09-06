@@ -1,0 +1,84 @@
+/* webv0.9 样式：分组筛选 + 分数高亮区 + chips + 双页 */
+* { box-sizing: border-box; }
+body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; margin: 0; background: #f6f7f9; color: #222; line-height: 1.5; }
+header { background: #1f3a5f; color: #fff; padding: 18px 24px; }
+.head-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+header h1 { margin: 0 0 6px; font-size: 24px; }
+header small { font-size: 14px; opacity: .8; }
+.guide-btn { background: #ffd97a; color: #4a3000; font-weight: 800; font-size: 14px; padding: 8px 16px; border-radius: 999px; border: 0; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.guide-btn:hover { background: #ffe6a3; }
+.rule { margin: 0 0 6px; font-size: 15px; color: #ffe9b0; }
+.rule b { color: #ffd97a; font-size: 16px; }
+.note { font-size: 14px; opacity: .94; margin: 0; max-width: 960px; }
+main { max-width: 980px; margin: 18px auto; padding: 0 16px; }
+
+/* 使用指南弹窗（手机友好） */
+.modal-mask { position: fixed; inset: 0; background: rgba(20, 30, 50, .55); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 14px; }
+.modal-mask[hidden] { display: none; }
+.modal { background: #fff; border-radius: 12px; width: min(640px, 100%); max-height: 84vh; display: flex; flex-direction: column; box-shadow: 0 8px 30px rgba(0,0,0,.3); }
+.modal-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid #e6ebf2; }
+.modal-title { font-size: 17px; font-weight: 800; color: #1f3a5f; }
+.modal-x { background: none; border: 0; font-size: 18px; color: #667; cursor: pointer; padding: 2px 8px; }
+.modal-x:hover { color: #111; }
+.modal-body { padding: 6px 18px 4px; overflow-y: auto; font-size: 15px; }
+.method { margin: 8px 0; }
+.method b { color: #1f5f9e; }
+.modal-tip { font-size: 13px; color: #777; background: #f2f5f9; border-radius: 8px; padding: 8px 10px; }
+.modal-foot { padding: 12px 18px 16px; text-align: center; }
+.modal-ok { background: #1f5f9e; color: #fff; font-size: 16px; font-weight: 700; padding: 10px 26px; border-radius: 999px; border: 0; cursor: pointer; }
+
+.filters { background: #fff; border-radius: 10px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); margin-bottom: 10px; }
+.fgroup { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; padding: 6px 0; border-bottom: 1px dashed #e3e8ef; }
+.fgroup:last-of-type { border-bottom: 0; }
+.fg-title { font-size: 13px; font-weight: 700; color: #7a8799; min-width: 40px; }
+label { font-size: 13px; display: flex; align-items: center; gap: 6px; color:#333; }
+select, input[type=text] { padding: 5px 8px; border: 1px solid #c9d0d8; border-radius: 6px; font-size: 13px; background:#fff; }
+input[type=text] { width: 230px; }
+
+.fscore { background: #fff8ec; border: 1px solid #f2d9a4; border-radius: 8px; padding: 8px 12px; margin: 10px 0 2px; }
+.fs-title { font-size: 14px; font-weight: 800; color: #8a5b00; }
+.fs-desc { font-size: 12px; color: #a87f2f; margin-left: 8px; }
+.fs-row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-top: 6px; }
+.fs-row label { font-weight: 700; }          /* 中文/英文/数学 标签加粗 */
+.fs-row label select { font-weight: 400; }
+.fs-total { font-size: 15px; font-weight: 700; color: #b04a00; min-width: 150px; }
+.acts { margin: 8px 0 0; display: flex; gap: 10px; }
+
+button { background: #1f5f9e; color: #fff; border: 0; border-radius: 6px; padding: 6px 16px; font-size: 13px; cursor: pointer; }
+button.ghost { background: #e8effa; color: #1f5f9e; }
+.chips { min-height: 22px; margin: 6px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: #e8effa; color: #1f5f9e; border-radius: 12px; font-size: 12px; padding: 2px 10px; cursor: pointer; }
+.chip:hover { background: #d5e3f7; }
+.stat { font-size: 13px; color: #444; margin: 8px 2px; }
+
+ul.schools { list-style: none; margin: 0; padding: 0; }
+.schools li { background: #fff; border-radius: 10px; margin-bottom: 10px; padding: 12px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.07); cursor: pointer; border: 1px solid transparent; }
+.schools li:hover { border-color: #1f5f9e; }
+.s-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.s-name { font-size: 20px; font-weight: 700; color: #12304e; }
+.s-city { font-size: 12px; color: #777; }
+.s-tags { margin-left: auto; font-size: 12px; color: #1f5f9e; }
+.s-meta { font-size: 12px; color: #666; margin-top: 6px; }
+.tierchip { display: inline-block; font-size: 12px; border-radius: 10px; padding: 1px 10px; background: #e8effa; color: #1f5f9e; }
+
+.results { list-style: none; margin: 0; padding: 0; }
+.results li { background: #fff; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+.r-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.r-name { font-weight: 700; font-size: 18px; }
+.r-dept { color: #666; font-size: 12px; }
+.r-score { font-size: 14px; margin: 4px 0 2px; }
+.r-score b { color: #b04a00; font-size: 16px; }
+.r-meta { font-size: 12px; color: #666; margin-top: 4px; }
+.badge { display: inline-block; font-size: 11px; border-radius: 10px; padding: 1px 8px; }
+.badge.no { background: #eee; color: #888; }
+.r-note { font-size: 12px; color: #a05; background:#fdf3f6; padding: 2px 8px; border-radius: 6px; margin-top: 4px; display: inline-block; }
+.r-extra { font-size: 13px; color: #1f5f9e; margin: 4px 0 2px; }
+/* 院校页内字号放大：院校名/返回/校内搜索 */
+#pg-school label { font-size: 16px; }
+#pg-school select, #pg-school input[type=text] { font-size: 16px; padding: 7px 10px; }
+#pg-school input[type=text] { width: 280px; }
+#detailTitle { font-size: 26px; margin: 12px 0 4px; }
+.pagemark { font-size: 13px; color: #889; margin: 0 0 8px; }
+#back { font-size: 16px; padding: 8px 22px; }
+footer { text-align: center; color: #999; font-size: 13px; padding: 16px; }
