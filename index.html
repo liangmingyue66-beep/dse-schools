@@ -79,6 +79,8 @@
       <div class="row acts">
         <button id="go">筛选</button>
         <button id="reset" class="ghost">重置全部</button>
+        <button id="favOnly" class="ghost fav-toggle">★ 只看已收藏</button>
+        <span class="fav-count" id="favCount"></span>
       </div>
     </section>
 
@@ -91,6 +93,7 @@
   <div id="pg-school" hidden>
     <button id="back" class="ghost">← 返回院校列表</button>
     <h2 id="detailTitle"></h2>
+    <p class="detail-fav"><button id="favBtn" class="ghost fav-btn">☆ 收藏该校</button></p>
     <section class="filters inner">
       <div class="fgroup">
         <label>在本校搜索专业

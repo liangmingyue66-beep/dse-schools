@@ -19,6 +19,39 @@ const POINTS = { "5**": 7, "5*": 6, "5": 5, "4": 4, "3": 3, "2": 2, "1": 1 };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+/* ---------- 1b. 我的收藏（浏览器本地存储，无需登录） ---------- */
+const FAV_KEY = "dse_fav_v1";
+let FAV = (() => {
+  try { return JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); } catch (e) { return []; }
+})();
+let favOnly = false;
+const isFav = name => FAV.includes(name);
+function saveFav() {
+  try { localStorage.setItem(FAV_KEY, JSON.stringify(FAV)); } catch (e) { /* 隐私模式忽略 */ }
+  updateFavUI();
+}
+function toggleFav(name) {
+  const i = FAV.indexOf(name);
+  if (i >= 0) FAV.splice(i, 1); else FAV.push(name);
+  saveFav();
+}
+function updateFavUI() {
+  const n = FAV.length;
+  const btn = $("favOnly");
+  if (btn) {
+    btn.textContent = favOnly ? `★ 只看已收藏（${n}）` : `★ 只看已收藏${n ? "（" + n + "）" : ""}`;
+    btn.classList.toggle("on", favOnly);
+  }
+  const cnt = $("favCount");
+  if (cnt) cnt.textContent = n ? `已收藏 ${n} 所` : "还没收藏，点卡片右上角 ★";
+  const fb = $("favBtn");
+  if (fb) {
+    const cur = hashSchool();
+    fb.textContent = cur && isFav(cur) ? "★ 已收藏（点击取消）" : "☆ 收藏该校";
+    fb.classList.toggle("on", !!(cur && isFav(cur)));
+  }
+}
+
 /* ---------- 2. 数据索引 ---------- */
 const UNI_NAMES = DSE_DATA.unis.map(u => u["校名"]);
 const PROGS_BY = {};
@@ -129,6 +162,7 @@ function run() {
     if (kw && !ps.some(p => norm(p["专业名称"]).includes(kw) || norm(p["成绩区备注"]).includes(kw))) continue;
     if (appliedScore !== null) ps = ps.filter(p => fitScore(p, appliedScore));
     if (appliedScore !== null && ps.length === 0) continue;
+    if (favOnly && !isFav(u["校名"])) continue;      // 只看已收藏
     schools.push({ u, ps });
   }
   schools.sort((a, b) => simp(a.u["校名"]).localeCompare(simp(b.u["校名"]), "zh"));
@@ -140,13 +174,22 @@ function run() {
       ? `符合"最低≤${appliedScore}"的专业 ${ps.length} / ${nAll}`
       : `共 ${nAll} 个专业（含去年成绩 ${hasData} 个）`;
     const li = document.createElement("li");
+    const fav = isFav(u["校名"]);
+    if (fav) li.classList.add("fav");
     li.innerHTML =
       `<div class="s-top"><span class="s-name">${esc(u["校名"])}</span>
        ${u["层次"] ? `<span class="tierchip">${esc(u["层次"])}</span>` : ""}
        <span class="s-city">${esc(simp(u["省份"]))}·${esc(simp(u["城市"]))}</span>
-       <span class="s-tags">进入该校 →</span></div>
+       <span class="s-tags">进入该校 →</span>
+       <button class="fav-star${fav ? " on" : ""}" type="button"
+         title="${fav ? "取消收藏" : "收藏该校"}">${fav ? "★" : "☆"}</button></div>
        <div class="s-meta">${line}${kw ? ` · 含"${esc($("kw").value)}"` : ""}</div>`;
     li.onclick = () => goSchool(u["校名"]);
+    li.querySelector(".fav-star").addEventListener("click", ev => {
+      ev.stopPropagation();                 // 点收藏不进入详情
+      toggleFav(u["校名"]);
+      run();                                // 重绘（含"只看收藏"时的即时消失）
+    });
     $("schools").appendChild(li);
   }
   $("stat").textContent =
@@ -155,7 +198,12 @@ function run() {
     `${c.tier ? `层次=${c.tier}；` : ""}` +
     `${kw ? `专业含"${esc($("kw").value)}"；` : ""}` +
     `${appliedScore !== null ? `分数≤${appliedScore}；` : ""}` +
+    `${favOnly ? "只看已收藏；" : ""}` +
     `共 ${schools.length} / ${DSE_DATA.unis.length} 所院校`;
+  if (favOnly && schools.length === 0) {
+    $("schools").innerHTML = `<li class="fav-empty">还没有符合条件的收藏 —— 先点学校卡片右上角的 ☆ 收藏，或关闭"只看已收藏"。</li>`;
+  }
+  updateFavUI();
   renderChips();
 }
 
@@ -209,6 +257,7 @@ function openSchool(name) {
   eline.style.color = "#b06a00";
   eline.textContent = "额外科目要求信息可能有遗漏或错误，请以原书为准。";
   hline.insertAdjacentElement("afterend", eline);
+  updateFavUI();                       // 详情页收藏按钮状态
   drawDetail();
 }
 function drawDetail() {
@@ -294,9 +343,17 @@ $("reset").onclick = () => {
   $("sn").value = $("kw").value = ""; $("tier").value = ""; $("prov").value = "";
   fillCityOptions(""); $("city2").value = "";
   $("g_zh").value = $("g_en").value = $("g_ma").value = ""; appliedScore = null;
+  favOnly = false;                       // 重置时也退出"只看已收藏"
   run();
 };
 $("back").onclick = goHome;
+$("favOnly").addEventListener("click", () => { favOnly = !favOnly; run(); });
+$("favBtn").addEventListener("click", () => {
+  const cur = hashSchool();
+  if (!cur) return;
+  toggleFav(cur);
+  updateFavUI();
+});
 $("applyScore").onclick = () => {
   const t = liveTotal();
   if (t === null) { alert("请先选择中英数三科成绩"); return; }

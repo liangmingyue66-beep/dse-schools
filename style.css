@@ -46,6 +46,18 @@ input[type=text] { width: 230px; }
 
 button { background: #1f5f9e; color: #fff; border: 0; border-radius: 6px; padding: 6px 16px; font-size: 13px; cursor: pointer; }
 button.ghost { background: #e8effa; color: #1f5f9e; }
+
+/* 收藏功能 */
+.fav-toggle.on { background: #ffd97a; color: #4a3000; font-weight: 700; }
+.fav-count { font-size: 12px; color: #7a8799; margin-left: 4px; }
+.schools li.fav { border-left: 4px solid #f0b429; }
+.fav-star { background: none; color: #c9c9c9; font-size: 20px; line-height: 1; padding: 0 6px; border: 0; cursor: pointer; }
+.fav-star.on { color: #f0b429; }
+.fav-star:hover { color: #f0b429; }
+.fav-btn { font-size: 14px; padding: 6px 14px; }
+.fav-btn.on { background: #ffd97a; color: #4a3000; font-weight: 700; }
+.detail-fav { margin: 4px 0 10px; }
+.fav-empty { color: #888; font-size: 14px; padding: 16px 4px; list-style: none; }
 .chips { min-height: 22px; margin: 6px 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { background: #e8effa; color: #1f5f9e; border-radius: 12px; font-size: 12px; padding: 2px 10px; cursor: pointer; }
 .chip:hover { background: #d5e3f7; }
